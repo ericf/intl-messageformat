@@ -25,6 +25,10 @@
 
 })(typeof global !== 'undefined' ? global : this, function (Intl) {
 
+    if (!Intl) {
+        throw new ReferenceError ('Intl is ' + typeof Intl + '.');
+    }
+
     'use strict';
 
     // -- ES5 Built-ins --------------------------------------------------------
@@ -356,6 +360,10 @@
 
                 case 'select':
                     formatPattern.push(new SelectPart(valueName, optionsParts));
+                    break;
+
+                default: // no type defined or no valid type
+                    throw new Error('Pattern at index `' + i + '` does not have a valid type.');
                     break;
             }
         }
@@ -755,7 +763,7 @@
         // base case (plain string)
         if (!containsFormatElement(pattern)) {
             // Final chance to format the string before the parser spits it out
-            return outputFormatter ? outputFormatter(pattern) : pattern;
+            return outputFormatter ? outputFormatter(pattern) : [pattern];
         }
 
         tokens = tokenize(pattern);
